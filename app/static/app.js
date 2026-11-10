@@ -4,6 +4,7 @@ const els = {
   createBtn: document.getElementById("create-btn"),
   quoteBtn: document.getElementById("quote-btn"),
   copyBtn: document.getElementById("copy-btn"),
+  payBtn: document.getElementById("pay-btn"),
   review: document.getElementById("review"),
   result: document.getElementById("result"),
   composeError: document.getElementById("compose-error"),
@@ -102,31 +103,41 @@ function payloadFromForm() {
   };
 }
 
+function addTotalCard(label, value, className, note) {
+  const div = document.createElement("div");
+  div.className = "total-card" + (className ? " " + className : "");
+  const span = document.createElement("span");
+  span.textContent = label;
+  const strong = document.createElement("strong");
+  strong.textContent = value;
+  div.append(span, strong);
+  if (note) {
+    const sub = document.createElement("span");
+    sub.textContent = note;
+    div.appendChild(sub);
+  }
+  els.totals.appendChild(div);
+}
+
 function renderResult(data, withLink) {
   const explanation = data.explanation || {};
   const checkout = data.checkout;
+  const naira = explanation.naira || {};
   els.result.classList.remove("hidden");
   els.totals.innerHTML = "";
-  const cards = [
-    ["Client pays", explanation.client_pays || ""],
-    ["PayPal fee", explanation.paypal_fee || ""],
-    ["You receive", explanation.you_receive || ""],
-  ];
-  cards.forEach(([label, value], index) => {
-    const div = document.createElement("div");
-    div.className = "total-card" + (index === 2 ? " takehome" : "");
-    const span = document.createElement("span");
-    span.textContent = label;
-    const strong = document.createElement("strong");
-    strong.textContent = value;
-    div.append(span, strong);
-    if (index === 2 && explanation.naira && explanation.naira.available) {
-      const sub = document.createElement("span");
-      sub.textContent = "About " + explanation.naira.net_ngn + " mid-market";
-      div.appendChild(sub);
-    }
-    els.totals.appendChild(div);
-  });
+  addTotalCard("Client pays", explanation.client_pays || "");
+  addTotalCard("PayPal fee", explanation.paypal_fee || "");
+  addTotalCard("You receive", explanation.you_receive || "", "takehome");
+  if (naira.available) {
+    addTotalCard(
+      "Naira estimate",
+      naira.net_ngn || "",
+      "naira",
+      naira.rate_time_wat ? "Mid-market, " + naira.rate_time_wat : "Mid-market guide"
+    );
+  } else {
+    addTotalCard("Naira estimate", "Unavailable", "naira", "Mid-market rate is not available right now");
+  }
 
   els.explain.innerHTML = "";
   (explanation.paragraphs || [explanation.plain] || []).forEach((text) => {
@@ -153,12 +164,20 @@ function renderResult(data, withLink) {
   if (withLink && checkout && checkout.approve_url) {
     els.linkBox.classList.remove("hidden");
     els.approveUrl.value = checkout.approve_url;
+    if (els.payBtn) {
+      els.payBtn.hidden = false;
+      els.payBtn.href = checkout.approve_url;
+    }
     els.resultTitle.textContent = "Your payment link";
     els.resultMode.textContent = checkout.mode === "sandbox" ? "PayPal sandbox" : "Demo mode";
     els.resultMode.className = "pill " + (checkout.mode === "sandbox" ? "sandbox" : "mock");
     els.mockNote.hidden = checkout.mode !== "mock";
   } else {
     els.linkBox.classList.add("hidden");
+    if (els.payBtn) {
+      els.payBtn.hidden = true;
+      els.payBtn.removeAttribute("href");
+    }
     els.resultTitle.textContent = "Fee preview";
     els.resultMode.textContent = data.mode === "sandbox" ? "PayPal sandbox" : "Demo mode";
     els.resultMode.className = "pill " + (data.mode === "sandbox" ? "sandbox" : "mock");
@@ -235,6 +254,14 @@ els.copyBtn.addEventListener("click", async () => {
     document.execCommand("copy");
   }
 });
+
+if (els.payBtn) {
+  els.payBtn.addEventListener("click", (event) => {
+    if (!els.payBtn.href || els.payBtn.getAttribute("href") === "#") {
+      event.preventDefault();
+    }
+  });
+}
 
 document.getElementById("examples").addEventListener("click", (event) => {
   const button = event.target.closest("button[data-example]");

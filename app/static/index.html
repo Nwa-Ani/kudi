@@ -11,45 +11,61 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,700&family=Manrope:wght@400;500;600;700&family=Noto+Sans:wght@700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@500;600;700&family=Noto+Sans:wght@700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/static/styles.css" />
   </head>
   <body>
-    <div class="bg-glow" aria-hidden="true"></div>
-    <header class="top">
-      <div class="brand">
-        <span class="mark" aria-hidden="true">₦</span>
-        <div>
-          <p class="brand-name">Naira Pay Agent</p>
-          <p class="brand-sub">For Nigerian freelancers</p>
+    <header class="site-header">
+      <div class="inner header-row">
+        <div class="brand">
+          <span class="mark" aria-hidden="true">₦</span>
+          <div>
+            <p class="brand-name">Naira Pay Agent</p>
+            <p class="brand-sub">For Nigerian freelancers</p>
+          </div>
         </div>
-      </div>
-      <div class="pills">
-        <span id="mode-pill" class="pill">Checking mode</span>
-        <span class="pill quiet">Sandbox only</span>
+        <div class="header-meta">
+          <div class="pills">
+            <span id="mode-pill" class="pill">Checking mode</span>
+            <span class="pill quiet">Sandbox only</span>
+          </div>
+          <p class="independent">Independent project, uses PayPal sandbox</p>
+        </div>
       </div>
     </header>
 
-    <main>
+    <main class="inner">
       <section class="hero">
-        <p class="eyebrow">Paste, review, share</p>
-        <h1>Paste an invoice. Get a PayPal link. See what you actually take home.</h1>
+        <p class="eyebrow">Invoice in. Take-home out.</p>
+        <h1>Know the Naira you keep, before you send the bill.</h1>
         <p class="lede">
-          Built for Nigerian freelancers who get paid in dollars, euros, or pounds,
-          and still need a clear Naira picture. The agent reads a chat or invoice,
-          creates a PayPal sandbox checkout link, and explains the official fees
-          in plain English.
+          Paste a chat message or an invoice. The agent reads the client, the work,
+          the amount and the due date, then builds a PayPal sandbox checkout link
+          and explains official fees in plain English.
         </p>
         <ol class="steps">
-          <li>Paste the invoice or message</li>
-          <li>Check the details, then create the link</li>
-          <li>Share it, and read the take-home breakdown</li>
+          <li>
+            <span class="step-num">01</span>
+            <span class="step-title">Paste</span>
+            <span class="step-copy">Drop in the invoice or a short message.</span>
+          </li>
+          <li>
+            <span class="step-num">02</span>
+            <span class="step-title">Review</span>
+            <span class="step-copy">Check the details, then create the link.</span>
+          </li>
+          <li>
+            <span class="step-num">03</span>
+            <span class="step-title">Share</span>
+            <span class="step-copy">Send checkout, and read your take-home.</span>
+          </li>
         </ol>
       </section>
 
-      <section class="panel" id="compose">
+      <section class="panel compose" id="compose">
+        <div class="panel-kicker">New invoice</div>
         <label for="invoice">Invoice or chat message</label>
         <textarea
           id="invoice"
@@ -76,6 +92,7 @@
       </section>
 
       <section class="panel hidden" id="review">
+        <div class="panel-kicker">Review</div>
         <h2>Check the details</h2>
         <p class="panel-lead">Fix anything the agent missed, then create the payment link.</p>
         <div class="grid">
@@ -103,16 +120,28 @@
         <p class="form-error" id="review-error" hidden></p>
       </section>
 
-      <section class="panel hidden" id="result">
+      <section class="panel result-card hidden" id="result">
         <div class="result-head">
-          <h2 id="result-title">Your payment link</h2>
+          <div>
+            <div class="panel-kicker">Settlement</div>
+            <h2 id="result-title">Your payment link</h2>
+          </div>
           <span id="result-mode" class="pill"></span>
         </div>
+
+        <div class="statement">
+          <p class="statement-label">Fee breakdown</p>
+          <div class="totals" id="totals"></div>
+        </div>
+
         <div id="link-box" class="link-box hidden">
-          <p class="link-label">Share this PayPal checkout link with your client</p>
+          <a class="pay-btn" id="pay-btn" href="#" target="_blank" rel="noopener noreferrer">
+            Pay with PayPal sandbox
+          </a>
+          <p class="link-label">Or share this checkout link with your client</p>
           <div class="link-row">
             <input id="approve-url" type="text" readonly />
-            <button type="button" class="primary" id="copy-btn">Copy link</button>
+            <button type="button" class="ghost" id="copy-btn">Copy link</button>
           </div>
           <p class="hint" id="mock-note" hidden>
             This is a mock link for design and testing. When sandbox keys are set,
@@ -120,24 +149,26 @@
           </p>
         </div>
 
-        <div class="totals" id="totals"></div>
         <div class="explain" id="explain"></div>
         <p class="source" id="source"></p>
       </section>
     </main>
 
     <footer>
-      <p>
-        Receiving fees follow PayPal's official
-        <a href="https://www.paypal.com/ng/business/paypal-business-fees" rel="noopener noreferrer" target="_blank"
-          >Nigeria seller fee page</a>, last updated 28 October 2026.
-        PayPal does not settle in NGN. Mid-market Naira amounts are a guide only,
-        with the rate time shown in WAT.
-      </p>
-      <p>
-        This project uses the PayPal sandbox. It is not a PayPal product. No live
-        payments are taken. MIT licensed.
-      </p>
+      <div class="inner">
+        <p class="independent footer-flag">Independent project, uses PayPal sandbox</p>
+        <p>
+          Receiving fees follow PayPal's official
+          <a href="https://www.paypal.com/ng/business/paypal-business-fees" rel="noopener noreferrer" target="_blank"
+            >Nigeria seller fee page</a>, last updated 28 October 2026.
+          PayPal does not settle in NGN. Mid-market Naira amounts are a guide only,
+          with the rate time shown in WAT.
+        </p>
+        <p>
+          This project uses the PayPal sandbox. It is not a PayPal product. No live
+          payments are taken. MIT licensed.
+        </p>
+      </div>
     </footer>
     <script src="/static/app.js"></script>
   </body>

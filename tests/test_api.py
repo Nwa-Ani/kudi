@@ -26,7 +26,8 @@ def test_health_and_status(monkeypatch):
 def test_index_is_served():
     response = client.get("/")
     assert response.status_code == 200
-    assert "Naira Freelancer Pay Agent" in response.text
+    assert "Kudi" in response.text
+    assert "Get paid in dollars. Know your Naira." in response.text
     assert "—" not in response.text
 
 

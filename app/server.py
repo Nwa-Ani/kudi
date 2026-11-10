@@ -1,4 +1,4 @@
-"""HTTP API and static UI for the Naira Freelancer Pay Agent."""
+"""HTTP API and static UI for Kudi."""
 
 from __future__ import annotations
 
@@ -32,7 +32,7 @@ ROOT = Path(__file__).resolve().parent
 STATIC = ROOT / "static"
 
 app = FastAPI(
-    title="Naira Freelancer Pay Agent",
+    title="Kudi",
     version=__version__,
     docs_url=None,
     redoc_url=None,

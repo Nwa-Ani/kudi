@@ -45,7 +45,7 @@ mid-market FX. FastAPI and a static front end, ready to host on Render.
 
 ## Suggested short description
 
-Naira Freelancer Pay Agent helps a Nigerian freelancer turn a messy invoice or
+Kudi helps a Nigerian freelancer turn a messy invoice or
 chat message into a PayPal sandbox payment link, then explains official PayPal
 fees and a mid-market Naira estimate in plain English. PayPal does not settle
 in NGN, and the app says so clearly.

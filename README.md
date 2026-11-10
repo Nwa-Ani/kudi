@@ -1,6 +1,8 @@
-# Naira Freelancer Pay Agent
+# Kudi
 
-A PayPal AI hackathon project for Nigerian freelancers. Paste an invoice or a
+**Get paid in dollars. Know your Naira.**
+
+Kudi (Hausa for money) is a PayPal AI hackathon project for Nigerian freelancers. Paste an invoice or a
 chat message, get a PayPal sandbox payment link, and read a plain-English
 breakdown of what the client pays, what PayPal keeps, and what you actually
 take home, including a mid-market Naira estimate.

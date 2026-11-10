@@ -1,6 +1,7 @@
 # Devpost write-up (draft, not submitted)
 
-Project: Naira Freelancer Pay Agent
+Project: Kudi
+Tagline: Get paid in dollars. Know your Naira.
 Live demo: https://naira-pay-agent.onrender.com
 Code: https://github.com/Nwa-Ani/naira-pay-agent
 Builder: Nwa-Ani (@heisevo)
@@ -13,8 +14,9 @@ Nigerian freelancers are often paid in dollars, euros, or pounds through PayPal,
 then have to guess what will actually land after fees, and what that is worth
 in Naira. PayPal does not settle in NGN, official receiving fees are easy to
 misread, and invoices still arrive as messy WhatsApp messages. I wanted a
-small agent that turns that chat into a checkout link and a plain-English
-take-home figure, built for someone working from Nigeria.
+small agent, named Kudi (Hausa for money), that turns that chat into a
+checkout link and a plain-English take-home figure, built for someone
+working from Nigeria.
 
 ## What it does
 
@@ -101,10 +103,10 @@ asking website users to connect a wallet or share a live PayPal login.
 ## YouTube demo (draft)
 
 Title:
-Naira Pay Agent: PayPal sandbox checkout and Naira take-home for freelancers
+Kudi: Get paid in dollars. Know your Naira.
 
 Description:
-Naira Freelancer Pay Agent helps a Nigerian freelancer turn a messy invoice or
+Kudi helps a Nigerian freelancer turn a messy invoice or
 chat message into a PayPal sandbox payment link, then explains official PayPal
 fees and a mid-market Naira estimate in plain English.
 

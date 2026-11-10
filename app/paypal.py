@@ -128,7 +128,7 @@ def create_checkout_link(
     description: str,
     return_url: str,
     cancel_url: str,
-    brand_name: str = "Naira Freelancer Pay",
+    brand_name: str = "Kudi",
 ) -> CheckoutLink:
     code = currency.upper()
     if code not in PAYPAL_CHECKOUT_CURRENCIES:

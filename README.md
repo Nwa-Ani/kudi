@@ -9,6 +9,8 @@ take home, including a mid-market Naira estimate.
 
 This is a standalone app. It is not part of wagmi_tracker or the NEAR agent.
 
+**Live demo:** [https://kudi-jbhc.onrender.com](https://kudi-jbhc.onrender.com) (free Render plan; the first load can take about a minute). The earlier URL [https://naira-pay-agent.onrender.com](https://naira-pay-agent.onrender.com) stays up as an alias.
+
 **Example:** `Logo design for Sarah, 150 USD, due Friday`
 
 On that invoice, a Nigerian account receiving an international payment is
@@ -127,8 +129,8 @@ Render dashboard. Do not deploy until you have reviewed the app.
 - Sponsor prize: Best Use of Render (this repo ships with `render.yaml`)
 - Nigeria is eligible. Standard excluded countries do not include Nigeria.
 
-This repository has not been pushed, deployed, registered, or submitted. Those
-steps wait for the project owner.
+The repo is public and the live demo is up. Registration and the Devpost
+submission still wait for the project owner.
 
 ## License
 

@@ -43,3 +43,12 @@ def test_refuses_unsupported_currency(monkeypatch):
             return_url="http://localhost/done",
             cancel_url="http://localhost/cancelled",
         )
+
+
+
+def test_env_joins_split_parts(monkeypatch):
+    monkeypatch.setenv("PAYPAL_CLIENT_ID", "truncated")
+    monkeypatch.setenv("PAYPAL_CLIENT_ID_P0", "abcd")
+    monkeypatch.setenv("PAYPAL_CLIENT_ID_P1", "efgh")
+    from app.paypal import _env
+    assert _env("PAYPAL_CLIENT_ID") == "abcdefgh"

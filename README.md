@@ -9,7 +9,7 @@ take home, including a mid-market Naira estimate.
 
 This is a standalone app. It is not part of wagmi_tracker or the NEAR agent.
 
-**Live demo:** [https://kudi-jbhc.onrender.com](https://kudi-jbhc.onrender.com) (free Render plan; the first load can take about a minute). The earlier URL [https://naira-pay-agent.onrender.com](https://naira-pay-agent.onrender.com) stays up as an alias.
+**Live demo:** [https://kudi-app.onrender.com](https://kudi-app.onrender.com) (free Render plan; the first load can take about a minute). The earlier URL [https://naira-pay-agent.onrender.com](https://naira-pay-agent.onrender.com) stays up as an alias.
 
 **Example:** `Logo design for Sarah, 150 USD, due Friday`
 

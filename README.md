@@ -11,6 +11,8 @@ This is a standalone app. It is not part of wagmi_tracker or the NEAR agent.
 
 **Live demo:** [https://kudi-app.onrender.com](https://kudi-app.onrender.com) (free Render plan; the first load can take about a minute). The earlier URL [https://naira-pay-agent.onrender.com](https://naira-pay-agent.onrender.com) stays up as an alias.
 
+**Source:** [https://github.com/Nwa-Ani/kudi](https://github.com/Nwa-Ani/kudi)
+
 **Example:** `Logo design for Sarah, 150 USD, due Friday`
 
 On that invoice, a Nigerian account receiving an international payment is

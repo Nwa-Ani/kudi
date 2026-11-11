@@ -3,7 +3,7 @@
 Project: Kudi
 Tagline: Get paid in dollars. Know your Naira.
 Live demo: https://kudi-app.onrender.com
-Code: https://github.com/Nwa-Ani/naira-pay-agent
+Code: https://github.com/Nwa-Ani/kudi
 Builder: Nwa-Ani (@heisevo)
 
 Do not paste this onto Devpost until the project owner says to submit.
@@ -116,7 +116,7 @@ chat message into a PayPal sandbox payment link, then explains official PayPal
 fees and a mid-market Naira estimate in plain English.
 
 Live demo: https://kudi-app.onrender.com
-Source code: https://github.com/Nwa-Ani/naira-pay-agent
+Source code: https://github.com/Nwa-Ani/kudi
 
 In this demo I paste "Logo design for Sarah, 150 USD, due Friday", review the
 details, and create a PayPal sandbox checkout. PayPal's official fee for a

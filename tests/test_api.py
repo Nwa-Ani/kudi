@@ -21,6 +21,7 @@ def test_health_and_status(monkeypatch):
     status = client.get("/api/status")
     assert status.json()["fees"]["international_percent"] == "4.90%"
     assert "paypal.com/ng/business/paypal-business-fees" in status.json()["fees"]["url"]
+    assert status.json()["llm_configured"] is False
 
 
 def test_index_is_served():
@@ -103,3 +104,17 @@ def test_naira_invoice_converts_to_usd(monkeypatch):
     assert body["invoice"]["amount"] == "300.00"  # 450000 / 1500
     assert body["invoice"]["original_currency"] == "NGN"
     assert body["explanation"]["converted_to_usd"] is True
+
+
+def test_status_llm_configured_from_split_key(monkeypatch):
+    monkeypatch.setenv("GROQ_API_KEY_P0", "abcd")
+    monkeypatch.setenv("GROQ_API_KEY_P1", "efgh")
+    status = client.get("/api/status")
+    assert status.status_code == 200
+    assert status.json()["llm_configured"] is True
+
+
+def test_status_llm_not_configured_without_key():
+    status = client.get("/api/status")
+    assert status.status_code == 200
+    assert status.json()["llm_configured"] is False

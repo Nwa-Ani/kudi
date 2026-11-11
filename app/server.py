@@ -23,6 +23,7 @@ from app.fees import (
 )
 from app import fx as fxmod
 from app.fx import FxError
+from app.envutil import read_env
 from app.parser import maybe_refine_with_llm, now_wat, parse_invoice
 from app.paypal import PayPalError, credentials_present, create_checkout_link, paypal_mode
 
@@ -102,7 +103,7 @@ def status() -> dict:
         "credentials": "present" if credentials_present() else "absent",
         "fees": fee_source_meta(),
         "parser": "rule-based, with optional LLM if a key is set",
-        "llm_configured": bool(os.environ.get("OPENAI_API_KEY") or os.environ.get("GROQ_API_KEY")),
+        "llm_configured": bool(read_env("OPENAI_API_KEY") or read_env("GROQ_API_KEY")),
     }
 
 

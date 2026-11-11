@@ -2,7 +2,7 @@
 
 Project: Kudi
 Tagline: Get paid in dollars. Know your Naira.
-Live demo: https://kudi-jbhc.onrender.com
+Live demo: https://kudi-app.onrender.com
 Code: https://github.com/Nwa-Ani/naira-pay-agent
 Builder: Nwa-Ani (@heisevo)
 
@@ -43,12 +43,16 @@ The hosted demo runs in PayPal sandbox only. No live payments are taken.
 
 The app is a FastAPI service with a single-page front end, hosted on Render.
 
-Invoice reading is a rule-based parser. It handles chat-style lines, labelled
-invoice fields, currency symbols including naira, relative dates such as
-"due Friday", and day-first numeric dates common in Nigeria. Dates are
+Invoice reading starts with a rule-based parser. It handles chat-style lines,
+labelled invoice fields, currency symbols including naira, relative dates such
+as "due Friday", and day-first numeric dates common in Nigeria. Dates are
 resolved in Africa/Lagos. The parser needs no API key, so judges can run the
-demo from the readme alone. If an OpenAI-compatible key is set, the same parse
-can be refined by a model, and a model failure never blocks the app.
+demo from the readme alone.
+
+The live demo then refines that parse with a Groq-hosted OpenAI-compatible
+model (`openai/gpt-oss-120b`). A model failure never blocks the app; it falls
+back to the rule-based result. The review screen shows when AI helped read
+the invoice.
 
 Checkout links come from the PayPal Orders v2 sandbox API. If sandbox keys are
 missing, the app runs in mock mode so the UI and tests still work. Live or
@@ -64,8 +68,8 @@ fallback.
 ## Tools used
 
 - PayPal Orders v2 API (sandbox) for the shareable checkout link
-- A rule-based invoice parser, with an optional OpenAI-compatible model if a
-  key is set
+- A rule-based invoice parser, refined on the live demo by a Groq-hosted
+  OpenAI-compatible model (`openai/gpt-oss-120b`), with a rule-based fallback
 - FastAPI, Python, and a static front end
 - open.er-api.com and Frankfurter for mid-market FX
 - Render, for hosting the public demo
@@ -80,8 +84,9 @@ Orders v2 API directly.
 Official fees had to be taken from the Nigeria seller fee page, not guessed.
 PayPal does not settle in NGN, so a Naira invoice needs a clear USD conversion
 path and a disclaimer. Mid-market Naira figures must not be mistaken for a
-bank credit. The parser also had to work on messy, unlabelled chat text
-without requiring a paid model, so the demo stays reliable for judges.
+bank credit. The parser also had to work on messy, unlabelled chat text, and stay
+reliable for judges if the hosted model is slow or unavailable, so the
+rule-based fallback remains the safety net.
 
 ## Accomplishments
 
@@ -110,7 +115,7 @@ Kudi helps a Nigerian freelancer turn a messy invoice or
 chat message into a PayPal sandbox payment link, then explains official PayPal
 fees and a mid-market Naira estimate in plain English.
 
-Live demo: https://kudi-jbhc.onrender.com
+Live demo: https://kudi-app.onrender.com
 Source code: https://github.com/Nwa-Ani/naira-pay-agent
 
 In this demo I paste "Logo design for Sarah, 150 USD, due Friday", review the

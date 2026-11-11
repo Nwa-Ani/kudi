@@ -2,7 +2,8 @@
 
 This is the default "AI" step. It uses deterministic pattern matching, not a
 hosted model, so it works with no API key. An optional OpenAI-compatible model
-can refine the parse when OPENAI_API_KEY or GROQ_API_KEY is set.
+can refine the parse when OPENAI_API_KEY or GROQ_API_KEY is set. The live demo
+uses Groq (openai/gpt-oss-120b) with this rule-based parser as the fallback.
 
 The parser looks for a client, line items, an amount and currency, and a due
 date. Dates are resolved in Africa/Lagos (WAT).
@@ -11,7 +12,6 @@ date. Dates are resolved in Africa/Lagos (WAT).
 from __future__ import annotations
 
 import json
-import os
 import re
 from dataclasses import asdict, dataclass, field
 from datetime import date, datetime, timedelta
@@ -19,6 +19,7 @@ from decimal import Decimal, InvalidOperation
 from typing import Any
 from zoneinfo import ZoneInfo
 
+from app.envutil import read_env
 from dateutil.parser import parse as dateutil_parse
 from dateutil.relativedelta import relativedelta, FR, MO, SA, SU, TH, TU, WE
 
@@ -515,16 +516,31 @@ def parse_invoice(text: str, now: datetime | None = None) -> ParseResult:
     return result
 
 
+def _llm_text(value: Any) -> str | None:
+    """Turn an LLM field into a single display string."""
+    if value is None or value is False:
+        return None
+    if isinstance(value, list):
+        parts = [str(item).strip() for item in value if str(item).strip()]
+        return ", ".join(parts) or None
+    text = str(value).strip()
+    return text or None
+
+
 def maybe_refine_with_llm(result: ParseResult, text: str, now: datetime | None = None) -> ParseResult:
     """Optionally refine a parse with an OpenAI-compatible API. Failures are ignored."""
-    api_key = os.environ.get("OPENAI_API_KEY") or os.environ.get("GROQ_API_KEY")
+    openai_key = read_env("OPENAI_API_KEY")
+    groq_key = read_env("GROQ_API_KEY")
+    api_key = openai_key or groq_key
     if not api_key:
         return result
-    base = os.environ.get("OPENAI_BASE_URL")
-    if not base and os.environ.get("GROQ_API_KEY") and not os.environ.get("OPENAI_API_KEY"):
+    base = read_env("OPENAI_BASE_URL")
+    if not base and groq_key and not openai_key:
         base = "https://api.groq.com/openai/v1"
     base = (base or "https://api.openai.com/v1").rstrip("/")
-    model = os.environ.get("OPENAI_MODEL") or os.environ.get("GROQ_MODEL") or "gpt-4o-mini"
+    model = read_env("OPENAI_MODEL") or read_env("GROQ_MODEL")
+    if not model:
+        model = "gpt-4o-mini" if openai_key else "openai/gpt-oss-120b"
     current = now_wat(now)
     prompt = {
         "role": "system",
@@ -560,10 +576,12 @@ def maybe_refine_with_llm(result: ParseResult, text: str, now: datetime | None =
         return result
 
     refined = ParseResult(**{**result.as_dict()})
-    if data.get("client") and not refined.client:
-        refined.client = str(data["client"]).strip()
-    if data.get("items") and not refined.items:
-        refined.items = str(data["items"]).strip()
+    client = _llm_text(data.get("client"))
+    if client and not refined.client:
+        refined.client = client
+    items = _llm_text(data.get("items"))
+    if items and not refined.items:
+        refined.items = items
     if data.get("amount") and not refined.amount:
         try:
             value = Decimal(str(data["amount"]).replace(",", ""))
@@ -571,15 +589,16 @@ def maybe_refine_with_llm(result: ParseResult, text: str, now: datetime | None =
             refined.ok = True
         except (InvalidOperation, ValueError, TypeError):
             pass
-    if data.get("currency") and (not refined.currency or refined.currency_assumed):
-        code = str(data["currency"]).upper().strip()
+    currency = _llm_text(data.get("currency"))
+    if currency and (not refined.currency or refined.currency_assumed):
+        code = currency.upper().strip()
         if re.fullmatch(r"[A-Z]{3}", code):
             refined.currency = code
             refined.currency_assumed = False
-    if data.get("due_date") and not refined.due_date:
-        raw = str(data["due_date"])
+    due_raw = _llm_text(data.get("due_date"))
+    if due_raw and not refined.due_date:
         try:
-            due = date.fromisoformat(raw)
+            due = date.fromisoformat(due_raw)
             refined.due_date = due.isoformat()
             refined.due_date_label = _format_due(due)
         except ValueError:

@@ -1,7 +1,8 @@
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-from app.parser import parse_invoice
+from app.envutil import read_env
+from app.parser import maybe_refine_with_llm, parse_invoice
 
 WAT = ZoneInfo("Africa/Lagos")
 TUESDAY = datetime(2026, 11, 10, 9, 0, tzinfo=WAT)  # A Tuesday
@@ -105,3 +106,98 @@ def test_day_first_numeric_date():
     result = parse("Portrait shoot for Ama, 120 USD, due 15/11/2026")
     assert result.due_date == "2026-11-15"
     assert result.client == "Ama"
+
+
+def test_llm_join_reads_split_key(monkeypatch):
+    monkeypatch.setenv("GROQ_API_KEY_P0", "abcd")
+    monkeypatch.setenv("GROQ_API_KEY_P1", "efgh")
+    assert read_env("GROQ_API_KEY") == "abcdefgh"
+
+
+def test_llm_not_used_without_key():
+    result = parse("Logo design for Sarah, 150 USD, due Friday")
+    refined = maybe_refine_with_llm(result, "Logo design for Sarah, 150 USD, due Friday", now=TUESDAY)
+    assert refined.source == "rules"
+    assert refined.client == "Sarah"
+
+
+def test_llm_failure_falls_back_to_rules(monkeypatch):
+    monkeypatch.setenv("GROQ_API_KEY", "test-key")
+
+    def boom(*args, **kwargs):
+        raise RuntimeError("network down")
+
+    monkeypatch.setattr("httpx.post", boom)
+    result = parse("Logo design for Sarah, 150 USD, due Friday")
+    refined = maybe_refine_with_llm(result, "Logo design for Sarah, 150 USD, due Friday", now=TUESDAY)
+    assert refined.source == "rules"
+    assert refined.client == "Sarah"
+    assert refined.amount == "150.00"
+
+
+class _FakeResponse:
+    def __init__(self, payload):
+        self._payload = payload
+
+    def raise_for_status(self):
+        return None
+
+    def json(self):
+        return self._payload
+
+
+def test_llm_refine_sets_source_and_fills_gaps(monkeypatch):
+    monkeypatch.setenv("GROQ_API_KEY", "test-key")
+    monkeypatch.setenv("GROQ_MODEL", "openai/gpt-oss-120b")
+
+    def fake_post(url, **kwargs):
+        assert "api.groq.com" in url
+        assert kwargs["json"]["model"] == "openai/gpt-oss-120b"
+        return _FakeResponse({
+            "choices": [{
+                "message": {
+                    "content": (
+                        '{"client":"Sarah","items":["Logo"],'
+                        '"amount":"150","currency":"USD","due_date":"2026-11-13"}'
+                    )
+                }
+            }]
+        })
+
+    monkeypatch.setattr("httpx.post", fake_post)
+    # This text has no amount, so the model has a gap to fill.
+    result = parse("Love the logo! PayPal ok? need it by friday - Sarah")
+    assert result.amount is None
+    refined = maybe_refine_with_llm(
+        result,
+        "Love the logo! Sending $150 now. PayPal ok? need it by friday - Sarah",
+        now=TUESDAY,
+    )
+    assert refined.source == "rules+llm"
+    assert refined.ok
+    assert refined.client == "Sarah"
+    assert refined.amount == "150.00"
+    assert refined.currency == "USD"
+    assert refined.due_date == "2026-11-13"
+    # Existing rule-based fields are kept; the model only fills gaps.
+    assert refined.items == result.items
+
+
+def test_llm_items_list_is_joined(monkeypatch):
+    monkeypatch.setenv("GROQ_API_KEY", "test-key")
+
+    def fake_post(url, **kwargs):
+        return _FakeResponse({
+            "choices": [{
+                "message": {
+                    "content": '{"client":"Sarah","items":["Logo","revisions"],"amount":null,"currency":null,"due_date":null}'
+                }
+            }]
+        })
+
+    monkeypatch.setattr("httpx.post", fake_post)
+    result = parse("Invoice for Sarah, due Friday")
+    refined = maybe_refine_with_llm(result, "Invoice for Sarah, due Friday", now=TUESDAY)
+    assert refined.source == "rules+llm"
+    assert refined.items == "Logo, revisions"
+    assert refined.client == "Sarah"

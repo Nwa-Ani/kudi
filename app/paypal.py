@@ -6,7 +6,6 @@ Credentials are read from the environment and are never logged or returned.
 
 from __future__ import annotations
 
-import os
 import secrets
 import time
 from dataclasses import asdict, dataclass
@@ -15,6 +14,7 @@ from typing import Any
 
 import httpx
 
+from app.envutil import read_env as _env
 from app.fees import PAYPAL_CHECKOUT_CURRENCIES, decimals_for, quantize_amount
 
 SANDBOX_API = "https://api-m.sandbox.paypal.com"
@@ -36,22 +36,6 @@ class CheckoutLink:
 
     def as_dict(self) -> dict[str, Any]:
         return asdict(self)
-
-
-def _env(name: str) -> str:
-    """Read an env var. If NAME_P0, NAME_P1, ... are set, concatenate those instead.
-
-    Some hosts cap a single environment value at a very short length. Split
-    parts let the full sandbox credential be provided without printing it.
-    """
-    if os.environ.get(f"{name}_P0") is not None:
-        parts: list[str] = []
-        index = 0
-        while f"{name}_P{index}" in os.environ:
-            parts.append(os.environ.get(f"{name}_P{index}") or "")
-            index += 1
-        return "".join(parts).strip()
-    return (os.environ.get(name) or "").strip()
 
 
 def paypal_mode() -> str:

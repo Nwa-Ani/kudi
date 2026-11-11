@@ -10,6 +10,7 @@ const els = {
   composeError: document.getElementById("compose-error"),
   reviewError: document.getElementById("review-error"),
   warnings: document.getElementById("warnings"),
+  parseSource: document.getElementById("parse-source"),
   modePill: document.getElementById("mode-pill"),
   client: document.getElementById("field-client"),
   items: document.getElementById("field-items"),
@@ -86,6 +87,18 @@ function fillParse(parsed) {
   } else {
     els.warnings.hidden = true;
     els.warnings.textContent = "";
+  }
+  if (els.parseSource) {
+    if (parsed.source === "rules+llm") {
+      els.parseSource.hidden = false;
+      els.parseSource.textContent = "Read by AI, with the rule-based parser as a fallback.";
+    } else if (parsed.source === "rules") {
+      els.parseSource.hidden = false;
+      els.parseSource.textContent = "Read by the rule-based parser.";
+    } else {
+      els.parseSource.hidden = true;
+      els.parseSource.textContent = "";
+    }
   }
   els.review.classList.remove("hidden");
   els.review.scrollIntoView({ behavior: "smooth", block: "start" });

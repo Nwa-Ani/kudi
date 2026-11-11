@@ -55,14 +55,16 @@ in Africa/Lagos (WAT).
 
 ## How the "AI" step works
 
-The default parser is a **rule-based invoice reader**. It does not need an API
+The default invoice reader is a **rule-based parser**. It does not need an API
 key, it is deterministic, and it is covered by tests. That was chosen so the
 demo keeps working without a paid model, and so judges can run it from the
 readme alone.
 
-If you set `OPENAI_API_KEY` or `GROQ_API_KEY`, the same parse can be refined by
-an OpenAI-compatible model. The rule-based result is still used as the base,
-and a model failure never blocks the app.
+The live demo also uses a **Groq-hosted OpenAI-compatible model**
+(`openai/gpt-oss-120b`) to refine the parse. If you set `GROQ_API_KEY` (or
+`OPENAI_API_KEY`), the same path runs locally. The rule-based result is still
+used as the base, and a model failure never blocks the app. The review step
+shows whether AI refined the parse.
 
 The PayPal Agent Toolkit was not required by the official rules and is not used
 here, because it needs a function-calling model. This project calls the PayPal
